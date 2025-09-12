@@ -3,7 +3,9 @@ package com.project.customer;
 import com.project.customer.dto.CustomerRequest;
 import com.project.customer.dto.CustomerResponse;
 import com.project.customer.entity.Customer;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CustomerMapper {
     public Customer toCustomer(CustomerRequest request) {
         if (request == null) {
