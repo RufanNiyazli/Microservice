@@ -31,9 +31,9 @@ public class CustomerService {
     }
 
 
-    public List<CustomerResponse> findAllCustomer() {
-        return this.customerRepository.findAll().stream().map(this.customerMapper.fromCustomer())
-                .collect(Collectors.toList());
+        public List<CustomerResponse> findAllCustomer() {
+        return this.customerRepository.findAll().stream().map(this.customerMapper::fromCustomer).
+                collect(Collectors.toList());
     }
 
     public CustomerResponse findById(Long id) {
@@ -41,21 +41,28 @@ public class CustomerService {
 
     }
 
+    public Boolean existById(Long id) {
+        return this.customerRepository.findById(id).isPresent();
+    }
+
+    public void deleteCustomerById(Long id) {
+        this.customerRepository.deleteById(id);
+
+    }
+
+
     private void mergeCustomer(CustomerRequest request, Customer customer) {
         if (StringUtils.isNotBlank(request.firstname())) {
             customer.setFirstname(request.firstname());
         }
         if (StringUtils.isNotBlank(request.lastname())) {
             customer.setLastname(request.lastname());
-
         }
         if (StringUtils.isNotBlank(request.email())) {
             customer.setEmail(request.email());
         }
         if (request.address() != null) {
             customer.setAddress(request.address());
-
-
         }
     }
 }
