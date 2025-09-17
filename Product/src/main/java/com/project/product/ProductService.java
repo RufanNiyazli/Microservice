@@ -5,6 +5,7 @@ import com.project.product.dto.ProductPurchaseResponse;
 import com.project.product.dto.ProductRequest;
 import com.project.product.dto.ProductResponse;
 import com.project.product.entity.Product;
+import com.project.product.exception.ProductPurchaseException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class ProductService {
         var productIds = requests.stream().map(ProductPurchaseRequest::productId).toList();
         var storedProducts = repository.findAllByIdInOrderById(productIds);
         if (productIds.size() != storedProducts.size()) {
-            throw new ProductPurchaseException();
+            throw new ProductPurchaseException("One or more products does not exist");
         }
         var sortedProducts = requests.stream().sorted(Comparator.comparing(ProductPurchaseRequest::productId)).toList();
         var purchasedProducts = new ArrayList<ProductPurchaseResponse>();
@@ -49,7 +50,7 @@ public class ProductService {
             var product = storedProducts.get(i);
             var productRequest = sortedProducts.get(i);
             if (product.getAvailable_quantity() < productRequest.quantity()) {
-                throw new ProductPurchaseException();
+                throw new ProductPurchaseException("Insufficient stock quantity for product with ID:: " + productRequest.productId());
             }
             var new_available_quantity = product.getAvailable_quantity() - productRequest.quantity();
             product.setAvailable_quantity(new_available_quantity);

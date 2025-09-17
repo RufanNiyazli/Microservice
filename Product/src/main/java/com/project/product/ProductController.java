@@ -4,6 +4,7 @@ import com.project.product.dto.ProductPurchaseRequest;
 import com.project.product.dto.ProductPurchaseResponse;
 import com.project.product.dto.ProductRequest;
 import com.project.product.dto.ProductResponse;
+import com.project.product.exception.ProductPurchaseException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
