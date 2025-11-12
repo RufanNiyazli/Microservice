@@ -4,9 +4,9 @@ import com.project.product.dto.ProductPurchaseRequest;
 import com.project.product.dto.ProductPurchaseResponse;
 import com.project.product.dto.ProductRequest;
 import com.project.product.dto.ProductResponse;
-import com.project.product.exception.ProductPurchaseException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,25 +17,30 @@ import java.util.List;
 public class ProductController {
     private final ProductService service;
 
-    @PostMapping("/create-product")
-    public Long createProduct(@RequestBody @Valid ProductRequest request) {
-        return service.createProduct(request);
-
-    }
-
-    @GetMapping("/find/{id}")
-    public ProductResponse findById(@PathVariable Long id) {
-        return service.findById(id);
-    }
-
-    @GetMapping("/findAll")
-    public List<ProductResponse> findAll() {
-        return service.findAll();
+    @PostMapping
+    public ResponseEntity<Long> createProduct(
+            @RequestBody @Valid ProductRequest request
+    ) {
+        return ResponseEntity.ok(service.createProduct(request));
     }
 
     @PostMapping("/purchase")
-    public List<ProductPurchaseResponse> purchaseProduct(@Valid @RequestBody List<ProductPurchaseRequest> requests) throws ProductPurchaseException {
-        return service.purchaseProduct(requests);
+    public ResponseEntity<List<ProductPurchaseResponse>> purchaseProducts(
+            @RequestBody List<ProductPurchaseRequest> request
+    ) {
+        return ResponseEntity.ok(service.purchaseProduct(request));
+    }
+
+    @GetMapping("/{product-id}")
+    public ResponseEntity<ProductResponse> findById(
+            @PathVariable("product-id")Long  productId
+    ) {
+        return ResponseEntity.ok(service.findById(productId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProductResponse>> findAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
 }

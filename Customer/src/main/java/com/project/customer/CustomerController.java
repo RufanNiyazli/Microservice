@@ -2,7 +2,9 @@ package com.project.customer;
 
 import com.project.customer.dto.CustomerRequest;
 import com.project.customer.dto.CustomerResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,38 +13,48 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/customers")
 public class CustomerController {
-    private final CustomerService customerService;
+    private final CustomerService service;
 
-
-    @PostMapping("/create")
-    public Long createCustomer(@RequestBody CustomerRequest request) {
-        return customerService.createCustomer(request);
+    @PostMapping
+    public ResponseEntity<Long> createCustomer(
+            @RequestBody @Valid CustomerRequest request
+    ) {
+        return ResponseEntity.ok(this.service.createCustomer(request));
     }
 
-    @PutMapping("/update")
-    public void updateCustomer(@RequestBody CustomerRequest request) {
-        customerService.updateCustomer(request);
+    @PutMapping
+    public ResponseEntity<Void> updateCustomer(
+            @RequestBody @Valid CustomerRequest request
+    ) {
+        this.service.updateCustomer(request);
+        return ResponseEntity.accepted().build();
     }
 
-    @GetMapping("/findAll")
-    public List<CustomerResponse> findAllCustomer() {
-        return customerService.findAllCustomer();
+    @GetMapping
+    public ResponseEntity<List<CustomerResponse>> findAll() {
+        return ResponseEntity.ok(this.service.findAllCustomers());
     }
 
-    @GetMapping("/find/{id}")
-    public CustomerResponse findById(@PathVariable Long id) {
-        return customerService.findById(id);
+    @GetMapping("/exists/{customer-id}")
+    public ResponseEntity<Boolean> existsById(
+            @PathVariable("customer-id") Long   customerId
+    ) {
+        return ResponseEntity.ok(this.service.existsById(customerId));
     }
 
-    @GetMapping("/exist/{id}")
-    public Boolean existById(@PathVariable Long id) {
-        return customerService.existById(id);
+    @GetMapping("/{customer-id}")
+    public ResponseEntity<CustomerResponse> findById(
+            @PathVariable("customer-id") Long customerId
+    ) {
+        return ResponseEntity.ok(this.service.findById(customerId));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public void deleteCustomerById(@PathVariable Long id) {
-        customerService.deleteCustomerById(id);
+    @DeleteMapping("/{customer-id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable("customer-id") Long customerId
+    ) {
+        this.service.deleteCustomer(customerId);
+        return ResponseEntity.accepted().build();
     }
-
 
 }

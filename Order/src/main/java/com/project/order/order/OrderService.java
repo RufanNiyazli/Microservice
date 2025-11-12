@@ -4,6 +4,8 @@ import com.project.order.customer.CustomerClient;
 import com.project.order.exception.BusinessException;
 import com.project.order.orderLine.OrderLineRequest;
 import com.project.order.orderLine.OrderLineService;
+import com.project.order.payment.PaymentClient;
+import com.project.order.payment.PaymentRequest;
 import com.project.order.product.ProductClient;
 import com.project.order.product.PurchaseRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,22 +20,32 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper mapper;
     private final OrderLineService orderLineService;
+    private final PaymentClient paymentClient;
 
     //    roadmap for the orderservice
 //    1 check customer
     public Long createOrder(OrderRequest request) {
-        var customer = customerClient.findCustomerById(request.customerId()).orElseThrow(() -> new BusinessException("Cannot create order:: NoCustomerExist with this id:"))
+        var customer = customerClient.findCustomerById(request.customerId()).orElseThrow(() -> new BusinessException("Cannot create order:: NoCustomerExist with this id:"));
         productClient.purchaseProducts(request.products());
-//    3 contiude order
+//    3 continiue order
         var order = orderRepository.save(mapper.toOrder(request));
         for (PurchaseRequest purchaseRequest : request.products()) {
             orderLineService.saveOrderLine(
                     new OrderLineRequest(null, order.getId(), purchaseRequest.productId(), purchaseRequest.quantity())
             );
         }
+        var paymentRequest = new PaymentRequest(
+                request.amount(),
+                request.paymentMethod(),
+                order.getId(),
+                order.getReference(),
+                customer
+        );
+        paymentClient.requestOrderPayment(paymentRequest);
+
         // todo start payment process
 
-
+        return 1L;
     }
 
 

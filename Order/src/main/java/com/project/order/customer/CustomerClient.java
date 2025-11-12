@@ -12,6 +12,6 @@ import java.util.Optional;
 )
 public interface CustomerClient {
 
-    @GetMapping("/find/{id}")
-    Optional<CustomerResponse> findCustomerById(@PathVariable(name = "id") Long customerId);
+    @GetMapping("/{customer-id}")
+    Optional<CustomerResponse> findCustomerById(@PathVariable(name = "customer-id") Long customerId);
 }
