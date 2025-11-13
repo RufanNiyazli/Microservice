@@ -4,6 +4,13 @@ spring:
     username: postgres
     password: Rufan2006PostgreSql
     driver-class-name: org.postgresql.Driver
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.type.mapping: orderConfirmation:com.project.order.kafka.OrderConfirmation
   jpa:
     hibernate:
       ddl-auto: update
@@ -17,3 +24,66 @@ application:
     customer-url: http://localhost:8222/api/v1/customers
     payment-url: http://localhost:8222/api/v1/payments
     product-url: http://localhost:8222/api/v1/products
+
+#
+#### 🔹 1. `bootstrap-servers`
+#
+#```yaml
+#bootstrap-servers: localhost:9092
+#```
+#
+#* Kafka **broker-lərinin ünvanıdır**.
+#* Producer mesaj göndərmək üçün **Kafka cluster**-ə buradan qoşulur.
+#* Çox broker varsa, vergüllə ayrılır:
+#
+#```yaml
+#bootstrap-servers: broker1:9092,broker2:9092
+#```
+#
+#---
+#
+#### 🔹 2. `key-serializer`
+#
+#```yaml
+#key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#```
+#
+#* Kafka mesajı həm **key**, həm də **value** göndərir.
+#* Key, mesajın hansı **partition**-a düşəcəyini müəyyənləşdirə bilər.
+#* `StringSerializer` → key string tipindədirsə onu byte-a çevirir.
+#
+#---
+#
+#### 🔹 3. `value-serializer`
+#
+#```yaml
+#value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#```
+#
+#* Mesajın **payload-unun (datanın) seriyalaşdırılması** üçün istifadə olunur.
+#* `JsonSerializer` Java obyektini JSON formatına çevirir.
+#* Bizim misalda `OrderConfirmation` obyektini JSON şəklində broker-ə göndərir.
+#
+#---
+#
+#### 🔹 4. `properties.spring.json.type.mapping`
+#
+#```yaml
+#spring.json.type.mapping: orderConfirmation:com.project.order.kafka.OrderConfirmation
+#```
+#
+#* **JsonSerializer** üçün əlavə mapping-dir.
+#
+#* Producer-ə deyir ki:
+#
+#  > `"orderConfirmation"` tipində mesaj gəlsə, onu `com.project.order.kafka.OrderConfirmation` Java obyektinə map et.
+#
+#* Bu, xüsusilə **konsumer tərəfdə deserialization** üçün lazımdır.
+#
+#* Misal:
+#
+#  * Producer göndərir → JSON payload
+#  * Consumer oxuyur → JSON → Java obyektinə çevrilir (`OrderConfirmation`)
+#
+#---
+#
