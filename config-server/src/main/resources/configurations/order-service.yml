@@ -1,16 +1,21 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/order
-    username: postgres
-    password: Rufan2006PostgreSql
+    url: jdbc:postgresql://localhost:5433/order
+    username: rufan
+    password: rufan
     driver-class-name: org.postgresql.Driver
+
   kafka:
+    bootstrap-servers: localhost:29092   # <-- AdminClient üçün  MÜTLƏQ
     producer:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: localhost:29092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.type.mapping: orderConfirmation:com.project.order.kafka.OrderConfirmation
+      consumer:
+        bootstrap-servers: localhost:29092
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -19,6 +24,7 @@ spring:
 
 server:
   port: 8070
+
 application:
   config:
     customer-url: http://localhost:8222/api/v1/customers
