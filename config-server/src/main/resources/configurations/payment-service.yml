@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/payment
+    username: rufan
+    password: rufan
+    driver-class-name: org.postgresql.Driver
+    jpa:
+      hibernate:
+        ddl-auto: create
+      database: postgresql
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+    kafka:
+      bootstrap-servers: localhost:29092   # <-- AdminClient üçün  MÜTLƏQ
+      producer:
+        bootstrap-servers: localhost:29092
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+        properties:
+          spring.json.type.mapping: paymentConfirmation:com.project.payment.notification.PaymentNotificationRequest
+        consumer:
+          bootstrap-servers: localhost:29092
+application:
+  config:
+    product-url: http://localhost:8222/api/v1/products
+server:
+  port: 8060
